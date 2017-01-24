@@ -19,6 +19,7 @@ public class DingTextMsg extends DingMsgHeader implements DingMsg{
 
     @Override
     public JSONObject format() {
+        // TODO 每一个之类Msg都必须调用父类的format方法，才能构建完整的消息
         JSONObject obj = super.format();
         obj.put("msgtype", "text");
         JSONObject text = new JSONObject();
@@ -27,8 +28,6 @@ public class DingTextMsg extends DingMsgHeader implements DingMsg{
         return obj;
     }
 
-
-    @Override
     public String getJsonString() {
         return this.format().toString();
     }

@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by dongchen on 2017/1/23.
  */
-public class DingMsgHeader {
+public abstract class DingMsgHeader {
     private List<DingUser> users = null;
     private List<DingDepartment> departments = null;
     private String agentid = "35330198";
