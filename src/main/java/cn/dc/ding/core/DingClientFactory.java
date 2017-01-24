@@ -14,21 +14,21 @@ import java.net.URI;
 /**
  * Created by dongchen on 2017/1/23.
  */
-public class HttpClientFactory {
-    private static HttpClientFactory instance = null;
+public class DingClientFactory {
+    private static DingClientFactory instance = null;
 
-    public static HttpClientFactory getInstance() {
+    public static DingClientFactory getInstance() {
         if (instance == null) {
-            synchronized (HttpClientFactory.class) {
+            synchronized (DingClientFactory.class) {
                 if (instance == null) {
-                    instance = new HttpClientFactory();
+                    instance = new DingClientFactory();
                 }
             }
         }
         return instance;
     }
 
-    private HttpClientFactory() {
+    private DingClientFactory() {
     }
 
     private String corpid;

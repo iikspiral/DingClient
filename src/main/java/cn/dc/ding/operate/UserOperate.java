@@ -1,7 +1,7 @@
 package cn.dc.ding.operate;
 
 import cn.dc.ding.core.Cache;
-import cn.dc.ding.core.HttpClientFactory;
+import cn.dc.ding.core.DingClientFactory;
 import cn.dc.ding.core.MyResponseHandler;
 import cn.dc.ding.core.Operate;
 import cn.dc.ding.entity.DingUser;
@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class UserOperate extends Operate{
 
-    public UserOperate(HttpClientFactory factory) throws Exception {
+    public UserOperate(DingClientFactory factory) throws Exception {
         super(factory);
     }
 

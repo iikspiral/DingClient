@@ -18,7 +18,7 @@ public class Operate implements Closeable {
     protected CloseableHttpClient client = null;
     protected String ACCESS_TOKEN = null;
 
-    public Operate(HttpClientFactory factory) throws Exception {
+    public Operate(DingClientFactory factory) throws Exception {
         this.client = factory.createClient();
         try {
             this.ACCESS_TOKEN = factory.getAccess_token();

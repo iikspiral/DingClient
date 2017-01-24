@@ -1,6 +1,6 @@
 package cn.dc.ding.operate;
 
-import cn.dc.ding.core.HttpClientFactory;
+import cn.dc.ding.core.DingClientFactory;
 import cn.dc.ding.core.Operate;
 import cn.dc.ding.entity.*;
 import cn.dc.ding.exception.MsgException;
@@ -16,7 +16,7 @@ import java.util.List;
  * Created by dongchen on 2017/1/24.
  */
 public class MsgOperate extends Operate{
-    public MsgOperate(HttpClientFactory factory) throws Exception {
+    public MsgOperate(DingClientFactory factory) throws Exception {
         super(factory);
     }
 
