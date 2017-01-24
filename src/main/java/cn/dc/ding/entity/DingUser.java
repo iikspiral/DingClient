@@ -19,7 +19,7 @@ public class DingUser {
      *  "isLeader":true,
      *  "jobnumber":"0005",
      *  "mobile":"13958175433",
-     *  "name":"庞辉富",
+     *  "name":"XXX",
      *  "openId":"iiQV6FY6cRUrgRX7WrhiPhXwiEiE",
      *  "order":229296509020304292,
      *  "position":"",
