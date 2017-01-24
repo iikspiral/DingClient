@@ -62,8 +62,30 @@ public class DingMsgResponse {
     }
 
     public void setForbiddenUserId(String forbiddenUserId) {
+        if (forbiddenUserId == null) {
+            this.forbiddenUserId = null;
+            return;
+        }
         String[] split = forbiddenUserId.split("\\|");
         this.forbiddenUserId = Arrays.asList(split);
+    }
+
+    /**
+     * 判断userid是否存在拒绝用户列表中
+     * @param userid
+     * @return
+     */
+    public Boolean isForbiddenUserIdContain(String userid) {
+        if (this.forbiddenUserId == null) {
+            return false;
+        }
+        for (String s : forbiddenUserId) {
+            if (userid.equals(s)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public String getMessageId() {
