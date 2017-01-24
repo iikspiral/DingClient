@@ -4,6 +4,7 @@ import cn.dc.ding.core.Cache;
 import cn.dc.ding.core.DingClientFactory;
 import cn.dc.ding.core.MyResponseHandler;
 import cn.dc.ding.core.Operate;
+import cn.dc.ding.entity.DingDepartment;
 import cn.dc.ding.entity.DingUser;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -19,12 +20,24 @@ import java.util.List;
  */
 public class UserOperate extends Operate{
 
-    public UserOperate(DingClientFactory factory) throws Exception {
+    private static UserOperate instance = null;
+    public static UserOperate getOperate() throws Exception {
+        if (instance == null) {
+            synchronized (UserOperate.class) {
+                if (instance == null) {
+                    instance = new UserOperate(DingClientFactory.getInstance());
+                }
+            }
+        }
+        return instance;
+    }
+
+    private UserOperate(DingClientFactory factory) throws Exception {
         super(factory);
     }
 
     /**
-     * url:
+     * 根据部门id查询部门下的所有员工
      * @param id 部门id
      * @return
      */
@@ -62,6 +75,78 @@ public class UserOperate extends Operate{
         }
     }
 
+    /**
+     * 获取公司内所有员工信息
+     * @return
+     */
+    public List<DingUser> getAllUser() throws Exception {
+        DepartmentOperate dOperate = DepartmentOperate.getOperate();
+        Long companyId = dOperate.getCompanyId();
+        if (companyId == null) {
+            return null;
+        }
+        return getDepartmentMember(companyId);
+    }
+
+    /**
+     * 根据名称获取钉钉userid
+     * @param name
+     * @return
+     * @throws Exception
+     */
+    public DingUser findUser(String name) throws Exception {
+        return findUser(name, null);
+    }
+
+    /**
+     * 根据部门id，用户名称查询用户信息
+     * @param departmentId
+     * @param name
+     * @return
+     * @throws Exception
+     */
+    public DingUser findUser(Long departmentId, String name) throws Exception {
+        // 部门号为空，直接搜索全公司
+        if (departmentId == null) {
+            return findUser(name, null);
+
+        }
+        // 获取部门内员工
+        List<DingUser> member = getDepartmentMember(departmentId);
+        for (DingUser user : member) {
+            if (name.equals(user.getName())) {
+                return user;
+            }
+        }
+        // 部门没有此人
+        return null;
+    }
+
+    /**
+     * 通过用户名称和部门名称查询用户信息
+     * @param dname
+     * @param name
+     * @return
+     * @throws Exception
+     */
+    public DingUser findUser(String name, String dname) throws Exception {
+        if (name == null) {
+            return null;
+        }
+        DepartmentOperate dOperate = DepartmentOperate.getOperate();
+        List<DingDepartment> departmentList = dOperate.getDepartmentList();
+        for (DingDepartment department : departmentList) {
+            if (dname != null && !dname.equals(department.getName())) {
+                continue;
+            }
+            DingUser user = findUser(department.getId(), name);
+            if (user != null) {
+                return user;
+            }
+        }
+        // 公司内没有这个人
+        return null;
+    }
 
 
 }

@@ -5,4 +5,5 @@ package cn.dc.ding.utils;
  */
 public class SysProperties {
     public static String DEPARTMENT_LIST_KEY = "dlk";
+    public static String COMPANY_ID = "company_id";
 }

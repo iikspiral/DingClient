@@ -21,7 +21,7 @@ public abstract class DingMsgHeader {
         this.users = users;
     }
 
-    public void setUsers(String s) {
+    public void setUser(String s) {
         ArrayList<DingUser> list = new ArrayList<DingUser>();
         list.add(new DingUser(s));
         this.users = list;

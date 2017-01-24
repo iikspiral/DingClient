@@ -19,11 +19,26 @@ import java.util.List;
  * Created by dongchen on 2017/1/24.
  */
 public class DepartmentOperate extends Operate{
+    private static DepartmentOperate instance = null;
+    public static DepartmentOperate getOperate() throws Exception {
+        if (instance == null) {
+            synchronized (DepartmentOperate.class) {
+                if (instance == null) {
+                    instance = new DepartmentOperate(DingClientFactory.getInstance());
+                }
+            }
+        }
+        return instance;
+    }
 
-    public DepartmentOperate(DingClientFactory factory) throws Exception {
+    private DepartmentOperate(DingClientFactory factory) throws Exception {
         super(factory);
     }
 
+    /**
+     * 获取公司内所有部门
+     * @return
+     */
     public List<DingDepartment> getDepartmentList() {
         try {
             // 查询缓存
@@ -56,4 +71,21 @@ public class DepartmentOperate extends Operate{
             return null;
         }
     }
+
+    /**
+     * 获取公司id，通过这个id可以查到公司内所有员工
+     * @return
+     */
+    public Long getCompanyId(){
+        List<DingDepartment> departmentList = getDepartmentList();
+        for (DingDepartment department : departmentList) {
+            if (department.getParentid() == null) {
+                Long id = department.getId();
+                Cache.cacheDate(SysProperties.COMPANY_ID, id);
+                return id;
+            }
+        }
+        return null;
+    }
+
 }
