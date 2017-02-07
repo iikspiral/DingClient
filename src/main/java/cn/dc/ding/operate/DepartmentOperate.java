@@ -5,6 +5,7 @@ import cn.dc.ding.core.DingClientFactory;
 import cn.dc.ding.core.MyResponseHandler;
 import cn.dc.ding.core.Operate;
 import cn.dc.ding.entity.DingDepartment;
+import cn.dc.ding.utils.StringUtils;
 import cn.dc.ding.utils.SysProperties;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -53,7 +54,7 @@ public class DepartmentOperate extends Operate{
             HttpGet httpget = new HttpGet(uri);
             MyResponseHandler myResponseHandler = new MyResponseHandler();
             String responseBody = client.execute(httpget, myResponseHandler);
-            JSONObject jsonObject = JSON.parseObject(responseBody);
+            JSONObject jsonObject = JSON.parseObject(StringUtils.encode(responseBody));
             JSONArray department = jsonObject.getJSONArray("department");
             if (department == null) {
                 return null;

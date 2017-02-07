@@ -6,6 +6,7 @@ import cn.dc.ding.core.MyResponseHandler;
 import cn.dc.ding.core.Operate;
 import cn.dc.ding.entity.DingDepartment;
 import cn.dc.ding.entity.DingUser;
+import cn.dc.ding.utils.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -59,7 +60,7 @@ public class UserOperate extends Operate{
             HttpGet httpget = new HttpGet(uri);
             MyResponseHandler myResponseHandler = new MyResponseHandler();
             String responseBody = client.execute(httpget, myResponseHandler);
-            JSONObject jsonObject = JSON.parseObject(responseBody);
+            JSONObject jsonObject = JSON.parseObject(StringUtils.encode(responseBody));
             JSONArray userlist = jsonObject.getJSONArray("userlist");
             List<DingUser> users = JSON.parseArray(userlist.toJSONString(), DingUser.class);
 

@@ -1,5 +1,6 @@
 package cn.dc.ding.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,6 +47,10 @@ public class StringUtils {
     public static String join(String[] arr, String delimiter) {
         List<String> list = Arrays.asList(arr);
         return join(list, delimiter);
+    }
+
+    public static String encode(String old) throws UnsupportedEncodingException {
+        return new String(old.getBytes("ISO8859-1"), "UTF-8");
     }
 
 
