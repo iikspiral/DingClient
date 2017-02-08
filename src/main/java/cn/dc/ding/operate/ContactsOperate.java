@@ -2,15 +2,14 @@ package cn.dc.ding.operate;
 
 import cn.dc.ding.core.Cache;
 import cn.dc.ding.core.DingClientFactory;
-import cn.dc.ding.core.MyResponseHandler;
 import cn.dc.ding.core.Operate;
 import cn.dc.ding.entity.DingDepartment;
 import cn.dc.ding.entity.DingUser;
 import cn.dc.ding.utils.StringUtils;
+import cn.dc.ding.utils.SysProperties;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 
 import java.net.URI;
@@ -19,21 +18,9 @@ import java.util.List;
 /**
  * Created by dongchen on 2017/1/23.
  */
-public class UserOperate extends Operate{
+public class ContactsOperate extends Operate{
 
-    private static UserOperate instance = null;
-    public static UserOperate getOperate() throws Exception {
-        if (instance == null) {
-            synchronized (UserOperate.class) {
-                if (instance == null) {
-                    instance = new UserOperate(DingClientFactory.getInstance());
-                }
-            }
-        }
-        return instance;
-    }
-
-    private UserOperate(DingClientFactory factory) throws Exception {
+    public ContactsOperate(DingClientFactory factory) throws Exception {
         super(factory);
     }
 
@@ -57,9 +44,7 @@ public class UserOperate extends Operate{
             URI uri = new URIBuilder().setScheme("https").setHost("oapi.dingtalk.com").setPath("/user/list")
                     .setParameter("access_token", ACCESS_TOKEN).setParameter("department_id", id.toString())
                     .build();
-            HttpGet httpget = new HttpGet(uri);
-            MyResponseHandler myResponseHandler = new MyResponseHandler();
-            String responseBody = client.execute(httpget, myResponseHandler);
+            String responseBody = this.doGet(uri);
             JSONObject jsonObject = JSON.parseObject(StringUtils.encode(responseBody));
             JSONArray userlist = jsonObject.getJSONArray("userlist");
             List<DingUser> users = JSON.parseArray(userlist.toJSONString(), DingUser.class);
@@ -81,8 +66,7 @@ public class UserOperate extends Operate{
      * @return
      */
     public List<DingUser> getAllUser() throws Exception {
-        DepartmentOperate dOperate = DepartmentOperate.getOperate();
-        Long companyId = dOperate.getCompanyId();
+        Long companyId = this.getCompanyId();
         if (companyId == null) {
             return null;
         }
@@ -134,8 +118,7 @@ public class UserOperate extends Operate{
         if (name == null) {
             return null;
         }
-        DepartmentOperate dOperate = DepartmentOperate.getOperate();
-        List<DingDepartment> departmentList = dOperate.getDepartmentList();
+        List<DingDepartment> departmentList = this.getDepartmentList();
         for (DingDepartment department : departmentList) {
             if (dname != null && !dname.equals(department.getName())) {
                 continue;
@@ -146,6 +129,57 @@ public class UserOperate extends Operate{
             }
         }
         // 公司内没有这个人
+        return null;
+    }
+
+    /**
+     * 获取公司内所有部门
+     * @return
+     */
+    public List<DingDepartment> getDepartmentList() {
+        try {
+            // 查询缓存
+            Object cache = Cache.getCache(SysProperties.DEPARTMENT_LIST_KEY);
+            if (cache != null) {
+                return (List<DingDepartment>) cache;
+            }
+
+            URI uri = new URIBuilder().setScheme("https").setHost("oapi.dingtalk.com").setPath("/department/list")
+                    .setParameter("access_token", ACCESS_TOKEN)
+                    .build();
+            String responseBody = this.doGet(uri);
+            JSONObject jsonObject = JSON.parseObject(StringUtils.encode(responseBody));
+            JSONArray department = jsonObject.getJSONArray("department");
+            if (department == null) {
+                return null;
+            }
+            List<DingDepartment> departments = JSON.parseArray(department.toJSONString(), DingDepartment.class);
+
+            // 缓存数据
+            if (departments.size() > 0) {
+                Cache.cacheDate(SysProperties.DEPARTMENT_LIST_KEY, departments);
+            }
+
+            return departments;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 获取公司id，通过这个id可以查到公司内所有员工
+     * @return
+     */
+    public Long getCompanyId(){
+        List<DingDepartment> departmentList = getDepartmentList();
+        for (DingDepartment department : departmentList) {
+            if (department.getParentid() == null) {
+                Long id = department.getId();
+                Cache.cacheDate(SysProperties.COMPANY_ID, id);
+                return id;
+            }
+        }
         return null;
     }
 

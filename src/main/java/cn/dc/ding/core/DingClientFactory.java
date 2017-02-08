@@ -7,6 +7,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
 import java.io.IOException;
 import java.net.URI;
@@ -15,7 +16,21 @@ import java.net.URI;
  * Created by dongchen on 2017/1/23.
  */
 public class DingClientFactory {
+
+    private PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+
     private static DingClientFactory instance = null;
+
+    private String corpid;
+    private String corpsecret;
+    private String agentid;
+
+    private String access_token = null;
+
+    private DingClientFactory() {
+        cm.setMaxTotal(100);
+        cm.setDefaultMaxPerRoute(20);
+    }
 
     public static DingClientFactory getInstance() {
         if (instance == null) {
@@ -28,12 +43,16 @@ public class DingClientFactory {
         return instance;
     }
 
-    private DingClientFactory() {
+    public CloseableHttpClient createClient() {
+        return HttpClients.custom().setConnectionManager(cm).build();
     }
 
-    private String corpid;
-    private String corpsecret;
-    private String agentid;
+    public String getAccess_token() throws Exception{
+        if (access_token == null) {
+            access_token = getToken();
+        }
+        return access_token;
+    }
 
     public void setCorpInfo(String corpid, String corpsecret) {
         this.corpid = corpid;
@@ -46,19 +65,6 @@ public class DingClientFactory {
 
     public void setAgentid(String agentid) {
         this.agentid = agentid;
-    }
-
-    public CloseableHttpClient createClient() {
-        return HttpClients.createDefault();
-    }
-
-    private String access_token = null;
-
-    public String getAccess_token() throws Exception{
-        if (access_token == null) {
-            access_token = getToken();
-        }
-        return access_token;
     }
 
     /**
@@ -90,7 +96,7 @@ public class DingClientFactory {
             }
             return jObj.getString("access_token");
         } finally {
-            httpclient.close();
+//            httpclient.close();
         }
     }
 }

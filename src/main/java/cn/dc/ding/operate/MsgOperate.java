@@ -17,19 +17,7 @@ import java.util.List;
  */
 public class MsgOperate extends Operate{
 
-    private static MsgOperate instance = null;
-    public static MsgOperate getOperate() throws Exception {
-        if (instance == null) {
-            synchronized (DepartmentOperate.class) {
-                if (instance == null) {
-                    instance = new MsgOperate(DingClientFactory.getInstance());
-                }
-            }
-        }
-        return instance;
-    }
-
-    private MsgOperate(DingClientFactory factory) throws Exception {
+    public MsgOperate(DingClientFactory factory) throws Exception {
         super(factory);
     }
 

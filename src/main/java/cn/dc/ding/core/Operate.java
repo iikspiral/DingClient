@@ -2,6 +2,7 @@ package cn.dc.ding.core;
 
 import cn.dc.ding.entity.DingMsg;
 import cn.dc.ding.exception.GetTokenException;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -40,5 +41,11 @@ public class Operate implements Closeable {
         httpPost.setEntity(entity);
         MyResponseHandler myResponseHandler = new MyResponseHandler();
         return client.execute(httpPost, myResponseHandler);
+    }
+
+    protected String doGet(URI uri) throws IOException {
+        HttpGet httpGet = new HttpGet(uri);
+        MyResponseHandler myResponseHandler = new MyResponseHandler();
+        return client.execute(httpGet, myResponseHandler);
     }
 }
