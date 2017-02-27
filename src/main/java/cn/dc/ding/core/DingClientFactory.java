@@ -7,7 +7,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
 import java.io.IOException;
 import java.net.URI;
@@ -16,8 +15,6 @@ import java.net.URI;
  * Created by dongchen on 2017/1/23.
  */
 public class DingClientFactory {
-
-    private PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
 
     private static DingClientFactory instance = null;
 
@@ -28,8 +25,6 @@ public class DingClientFactory {
     private String access_token = null;
 
     private DingClientFactory() {
-        cm.setMaxTotal(100);
-        cm.setDefaultMaxPerRoute(20);
     }
 
     public static DingClientFactory getInstance() {
@@ -44,7 +39,7 @@ public class DingClientFactory {
     }
 
     public CloseableHttpClient createClient() {
-        return HttpClients.custom().setConnectionManager(cm).build();
+        return HttpClients.createDefault();
     }
 
     public String getAccess_token() throws Exception{
@@ -112,7 +107,7 @@ public class DingClientFactory {
             }
             return jObj.getString("access_token");
         } finally {
-//            httpclient.close();
+            httpclient.close();
         }
     }
 }
