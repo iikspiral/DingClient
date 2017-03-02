@@ -34,6 +34,14 @@ public class DingClientFactory {
         }
     }
 
+    public DingClientFactory() {
+    }
+
+    public DingClientFactory(String corpId, String corpSecret) {
+        this.corpId = corpId;
+        this.corpSecret = corpSecret;
+    }
+
     private String corpId;
     private String corpSecret;
 
