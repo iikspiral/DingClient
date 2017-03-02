@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.log4j.Logger;
 
 import java.net.URI;
 import java.util.List;
@@ -18,6 +19,8 @@ import java.util.List;
  * Created by dongchen on 2017/1/23.
  */
 public class ContactsOperate extends Operate{
+
+    private static final Logger logger = Logger.getLogger(ContactsOperate.class);
 
     public ContactsOperate(String accessToken) throws Exception {
         super(accessToken);
@@ -37,12 +40,18 @@ public class ContactsOperate extends Operate{
             // 查询缓存
             Object cache = Cache.getCache(id.toString());
             if (cache != null) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("缓存中存在" + id + "部门员工");
+                }
                 return (List<DingUser>) cache;
             }
 
             URI uri = new URIBuilder().setScheme("https").setHost("oapi.dingtalk.com").setPath("/user/list")
                     .setParameter("access_token", ACCESS_TOKEN).setParameter("department_id", id.toString())
                     .build();
+            if (logger.isDebugEnabled()) {
+                logger.debug("发送请求:" + uri.toString());
+            }
             String responseBody = this.doGet(uri);
             JSONObject jsonObject = JSON.parseObject(StringUtils.encode(responseBody));
             JSONArray userlist = jsonObject.getJSONArray("userlist");
@@ -50,6 +59,9 @@ public class ContactsOperate extends Operate{
 
             // 缓存数据
             if (users.size()>0) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("缓存" + id + "部门员工数据，员工数："+ users.size());
+                }
                 Cache.cacheDate(id.toString(), users);
             }
 
@@ -140,12 +152,18 @@ public class ContactsOperate extends Operate{
             // 查询缓存
             Object cache = Cache.getCache(SysProperties.DEPARTMENT_LIST_KEY);
             if (cache != null) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("缓存中存在所有部门数据");
+                }
                 return (List<DingDepartment>) cache;
             }
 
             URI uri = new URIBuilder().setScheme("https").setHost("oapi.dingtalk.com").setPath("/department/list")
                     .setParameter("access_token", ACCESS_TOKEN)
                     .build();
+            if (logger.isDebugEnabled()) {
+                logger.debug("发送请求:" + uri.toString());
+            }
             String responseBody = this.doGet(uri);
             JSONObject jsonObject = JSON.parseObject(StringUtils.encode(responseBody));
             JSONArray department = jsonObject.getJSONArray("department");
@@ -156,6 +174,9 @@ public class ContactsOperate extends Operate{
 
             // 缓存数据
             if (departments.size() > 0) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("缓存所有部门信息。部门数：" + departments.size());
+                }
                 Cache.cacheDate(SysProperties.DEPARTMENT_LIST_KEY, departments);
             }
 
