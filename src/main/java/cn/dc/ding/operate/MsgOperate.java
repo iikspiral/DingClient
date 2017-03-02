@@ -1,6 +1,5 @@
 package cn.dc.ding.operate;
 
-import cn.dc.ding.core.DingClientFactory;
 import cn.dc.ding.core.Operate;
 import cn.dc.ding.entity.*;
 import cn.dc.ding.exception.MsgException;
@@ -17,8 +16,8 @@ import java.util.List;
  */
 public class MsgOperate extends Operate{
 
-    public MsgOperate(DingClientFactory factory) throws Exception {
-        super(factory);
+    public MsgOperate(String accessToken) throws Exception {
+        super(accessToken);
     }
 
     public DingMsgResponse sendMsg(DingMsg msg) throws URISyntaxException, IOException, MsgException {

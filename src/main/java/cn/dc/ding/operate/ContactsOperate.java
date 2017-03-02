@@ -1,7 +1,6 @@
 package cn.dc.ding.operate;
 
 import cn.dc.ding.core.Cache;
-import cn.dc.ding.core.DingClientFactory;
 import cn.dc.ding.core.Operate;
 import cn.dc.ding.entity.DingDepartment;
 import cn.dc.ding.entity.DingUser;
@@ -20,8 +19,8 @@ import java.util.List;
  */
 public class ContactsOperate extends Operate{
 
-    public ContactsOperate(DingClientFactory factory) throws Exception {
-        super(factory);
+    public ContactsOperate(String accessToken) throws Exception {
+        super(accessToken);
     }
 
     /**

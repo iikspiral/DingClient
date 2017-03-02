@@ -1,6 +1,8 @@
 package cn.dc.ding.core;
 
 import cn.dc.ding.exception.CropException;
+import cn.dc.ding.operate.ContactsOperate;
+import cn.dc.ding.operate.MsgOperate;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.http.client.methods.HttpGet;
@@ -16,66 +18,28 @@ import java.net.URI;
  */
 public class DingClientFactory {
 
-    private static DingClientFactory instance = null;
+    public final static int CONTACTS_OPERATE = 1;
+    public final static int MSG_OPERATE = 2;
 
-    private String corpid;
-    private String corpsecret;
-    private String agentid;
 
-    private String access_token = null;
-
-    private DingClientFactory() {
-    }
-
-    public static DingClientFactory getInstance() {
-        if (instance == null) {
-            synchronized (DingClientFactory.class) {
-                if (instance == null) {
-                    instance = new DingClientFactory();
-                }
-            }
+    public Operate getOperate(int i) throws Exception {
+        String access_token = getAccess_token();
+        switch (i) {
+            case CONTACTS_OPERATE:
+                return new ContactsOperate(access_token);
+            case MSG_OPERATE :
+                return new MsgOperate(access_token);
+            default :
+                return null;
         }
-        return instance;
     }
 
-    public CloseableHttpClient createClient() {
-        return HttpClients.createDefault();
-    }
+    private String corpId;
+    private String corpSecret;
 
-    public String getAccess_token() throws Exception{
-        if (access_token == null) {
-            access_token = getToken();
-        }
-        return access_token;
-    }
-
-    public void setCorpInfo(String corpid, String corpsecret) {
-        this.corpid = corpid;
-        this.corpsecret = corpsecret;
-    }
-
-    public String getCorpid() {
-        return corpid;
-    }
-
-    public void setCorpid(String corpid) {
-        this.corpid = corpid;
-    }
-
-    public String getCorpsecret() {
-        return corpsecret;
-    }
-
-    public void setCorpsecret(String corpsecret) {
-        this.corpsecret = corpsecret;
-    }
-
-    public String getAgentid() {
-        return agentid;
-    }
-
-    public void setAgentid(String agentid) {
-        this.agentid = agentid;
+    public void setCorpInfo(String corpId, String corpSecret) {
+        this.corpId = corpId;
+        this.corpSecret = corpSecret;
     }
 
     /**
@@ -84,11 +48,11 @@ public class DingClientFactory {
      * @return
      * @throws IOException
      */
-    private String getToken() throws Exception{
-        CloseableHttpClient httpclient = this.createClient();
+    public String getAccess_token() throws Exception{
+        CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
             URI uri = new URIBuilder().setScheme("https").setHost("oapi.dingtalk.com").setPath("/gettoken")
-                    .setParameter("corpid", corpid).setParameter("corpsecret", corpsecret)
+                    .setParameter("corpid", corpId).setParameter("corpsecret", corpSecret)
                     .build();
             HttpGet httpget = new HttpGet(uri);
             MyResponseHandler myResponseHandler = new MyResponseHandler();
@@ -98,11 +62,11 @@ public class DingClientFactory {
             // crop信息错误
             if (jObj.size() == 2) {
                 //{"errcode":40089,"errmsg":"不合法的corpid或corpsecret"}
-                if (corpid == null || corpsecret == null) {
+                if (corpId == null || corpSecret == null) {
                     throw new CropException("corpid和corpsecret存在在空值");
                 } else {
-                    throw new CropException("错误代码：" + jObj.getString("errcode") + "，" +
-                            "错误信息：" + jObj.getString("errmsg"));
+                    throw new CropException("错误代码：" + jObj.getString("errcode") + "，" + "错误信息："
+                            + new String(jObj.getString("errmsg").getBytes("iso8859-1"), "utf-8"));
                 }
             }
             return jObj.getString("access_token");
@@ -110,4 +74,7 @@ public class DingClientFactory {
             httpclient.close();
         }
     }
+
+
+
 }

@@ -6,7 +6,7 @@
 
     <groupId>cn.dc</groupId>
     <artifactId>ding-client</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
     <dependencies>
         <!-- httpcomponents/httpclient -->
         <dependency>
