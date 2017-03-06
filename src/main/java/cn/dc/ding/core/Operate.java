@@ -21,7 +21,21 @@ public class Operate {
         this.ACCESS_TOKEN = accessToken;
     }
 
+    public Operate() {
+    }
+
     protected String doPost(URI uri, DingMsg msg) throws IOException {
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost(uri);
+        StringEntity entity = new StringEntity(msg.getJsonString(), ContentType.create("application/json", "UTF-8"));
+        httpPost.setEntity(entity);
+        MyResponseHandler myResponseHandler = new MyResponseHandler();
+        String execute = client.execute(httpPost, myResponseHandler);
+        client.close();
+        return execute;
+    }
+
+    protected String doPost(String uri, DingMsg msg) throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(uri);
         StringEntity entity = new StringEntity(msg.getJsonString(), ContentType.create("application/json", "UTF-8"));
